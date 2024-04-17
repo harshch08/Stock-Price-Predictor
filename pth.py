@@ -5,17 +5,28 @@ import pandas_datareader as data
 import streamlit as st
 from keras.models import load_model
 import yfinance as yf
+from datetime import date,timedelta
 
-start = '2013-01-01'
-end = '2023-06-08'
+today=date.today()
+ten_years_ago=today-timedelta(days=365*10)
+start = ten_years_ago
+end = today
 
 st.title('Stock Prices Prediction')
 
-stock_symbol = st.text_input('Enter Stock Ticker' , 'AAPL')
+stock_symbol = st.text_input('Enter Stock Ticker','AAPL', key='stock_input')
+# Define a function to convert input to uppercase on change
+def to_uppercase():
+    element = st.session_state['stock_input']
+    element.value = element.value.upper()
+
+# Add a hidden element to trigger the function on change
+st.write('<input type="text" style="display: none;" onchange="' + to_uppercase.__name__ + '()">', unsafe_allow_html=True)
+
 df = yf.download(tickers = stock_symbol, start = start, end=end )
 
 # describing data
-st.subheader('Data From 2013 - 2023')
+st.subheader('Data of Past 10 Years')
 st.write(df.describe())
 
 #visualizaions
@@ -60,7 +71,7 @@ model = load_model('keras_model.h5')
 
 #testing part
 past_100_days = data_training.tail(100)
-final_df = past_100_days.append(data_testing, ignore_index = True)
+final_df = pd.concat([past_100_days, data_testing], ignore_index=True)
 input_data = scaler.fit_transform(final_df)
 
 x_test = []
