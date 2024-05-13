@@ -9,4 +9,5 @@ This repo explores using machine learning to predict stock prices. It includes c
 
 # ways to start
 
-run command 'streamlit run main.py' to run the streamlit part
+run command 'streamlit run main.py' to run the webapp
+
